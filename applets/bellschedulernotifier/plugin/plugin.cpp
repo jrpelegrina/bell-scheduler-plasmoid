@@ -24,6 +24,6 @@
 void BellSchedulerIndicatorPlugin::registerTypes (const char *uri)
 {
     Q_ASSERT(uri == QLatin1String("org.kde.plasma.private.bellschedulernotifier"));
-    qmlRegisterType<BellSchedulerIndicatorr>(uri, 1, 0, "BellSchedulerIndicator");
+    qmlRegisterType<BellSchedulerIndicator>(uri, 1, 0, "BellSchedulerIndicator");
     qmlRegisterType<BellSchedulerIndicatorUtils>(uri, 1, 0, "BellSchedulerIndicatorUtils");
 }

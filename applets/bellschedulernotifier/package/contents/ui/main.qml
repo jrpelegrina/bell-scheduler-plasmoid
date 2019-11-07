@@ -12,7 +12,7 @@ Item {
 
 	id:bellschedulerApplet
 	
-	BelllSchedulerIndicator{
+	BellSchedulerIndicator{
         id:bellSchedulerIndicator
 
     }

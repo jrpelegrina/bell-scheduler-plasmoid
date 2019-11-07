@@ -15,19 +15,19 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-#ifndef PLASMA_LLIUREX_UP_INDICATOR_UTILS_H
-#define PLASMA_LLIUREX_UP_INDICATOR_UTILS_H
+#ifndef PLASMA_BELL_SCHEDULER_INDICATOR_UTILS_H
+#define PLASMA_BELL_SCHEDULER_INDICATOR_UTILS_H
 
 #include <QObject>
-#include <QProcess>
-#include <QDBusConnection>
-#include <QFile>
+
+#include <n4d.hpp>
+#include <variant.hpp>
+
+using namespace std;
+using namespace edupals;
 
 
-class QTimer;
-
-
-class LliurexUpIndicatorUtils : public QObject
+class BellSchedulerIndicatorUtils : public QObject
 {
     Q_OBJECT
 
@@ -35,22 +35,14 @@ class LliurexUpIndicatorUtils : public QObject
 public:
    
 
-    LliurexUpIndicatorUtils(QObject *parent = nullptr);
+    BellSchedulerIndicatorUtils(QObject *parent = nullptr);
 
-
-    bool isClient();
-    bool getUserGroups();
-    bool runUpdateCache();
-    bool checkRemote();
-    bool isCacheUpdated();
-
-    bool cacheUpdated=true;
+    variant::Variant readToken();
 
 private:    
-    
-    QFile PKGCACHE;
-    qint64 APT_FRECUENCY=1200000;
-    
+        
+     string  getFormatHour(int hour,int minute);
+     n4d::Client *client;
 
 
     

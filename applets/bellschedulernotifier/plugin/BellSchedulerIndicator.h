@@ -15,8 +15,8 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-#ifndef PLASMA_LLIUREX_UP_INDICATOR_H
-#define PLASMA_LLIUREX_UP_INDICATOR_H
+#ifndef PLASMA_BELL_SCHEDULER_INDICATOR_H
+#define PLASMA_BELL_SCHEDULER_INDICATOR_H
 
 #include <QObject>
 #include <QProcess>
@@ -26,14 +26,16 @@
 #include <QFile>
 #include <QThread>
 
-#include "LliurexUpIndicatorUtils.h"
+#include <variant.hpp>
+
+#include "BellSchedulerIndicatorUtils.h"
 
 class QTimer;
 class KNotification;
 class AsyncDbus;
 
 
-class LliurexUpIndicator : public QObject
+class BellSchedulerIndicator : public QObject
 {
     Q_OBJECT
 
@@ -49,12 +51,11 @@ public:
      * System tray icon states.
      */
     enum TrayStatus {
-        ActiveStatus = 0,
-        PassiveStatus,
+        PassiveStatus=0,
         NeedsAttentionStatus
     };
 
-    LliurexUpIndicator(QObject *parent = nullptr);
+    BellSchedulerIndicator(QObject *parent = nullptr);
 
     TrayStatus status() const;
     void changeTryIconState (int state);
@@ -69,15 +70,14 @@ public:
     QString iconName() const;
     void setIconName(const QString &name);
 
-    bool runUpdateCache();
     void isAlive();
 
 
 public slots:
     
     void worker();
-    void checkLlxUp();
-    void launch_llxup();
+    void getBellInfo();
+    void stopBell();
 
 signals:
    
@@ -88,13 +88,11 @@ signals:
 
 private:
 
-    AsyncDbus* adbus;
-    void plasmoidMode();
     QTimer *m_timer = nullptr;
     QTimer *m_timer_run=nullptr;
     QTimer *m_timer_cache=nullptr;
     TrayStatus m_status = PassiveStatus;
-    QString m_iconName = QStringLiteral("lliurexupnotifier");
+    QString m_iconName = QStringLiteral("bellschedulernotifier");
     QString m_toolTip;
     QString m_subToolTip;
     QFile TARGET_FILE;
@@ -104,52 +102,8 @@ private:
     bool is_working=false;
     int last_check=1205;
     int last_update=0;
-    LliurexUpIndicatorUtils* m_utils;
-    QPointer<KNotification> m_updatesAvailableNotification;
-    QPointer<KNotification> m_remoteUpdateNotification;
-
-private slots:
-
-     void updateCache();
-     void dbusDone(bool status);
+    BellSchedulerIndicatorUtils* m_utils;
      
-};
-
-/**
- * Class monitoring the file system quota.
- * The monitoring is performed through a timer, running the 'quota'
- * command line tool.
- */
-
-class AsyncDbus: public QThread
-
-{
-
-    Q_OBJECT
-
-public:
-    
-    LliurexUpIndicator* llxindicator;
-    
-    AsyncDbus(LliurexUpIndicator* lliurexupindicator)
-     {
-        llxindicator = lliurexupindicator;
-     }
-
-     void run() override
-     {      
-
-        bool result=llxindicator->runUpdateCache();
-        emit message(result);
-
-     }
-     
-signals:
-
-    void message(bool);
-
-
-
 };
 
 

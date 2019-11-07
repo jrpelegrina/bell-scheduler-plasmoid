@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-#include "LliurexUpIndicatorUtils.h"
+#include "BellSchedulerIndicatorUtils.h"
 
 #include <QFile>
 #include <QDateTime>
@@ -23,294 +23,112 @@
 #include <QRegularExpression>
 #include <QStandardPaths>
 #include <QDebug>
-#include <QtDBus/QtDBus>
-#include <QDBusInterface>
-#include <QDBusMetaType>
-#include <QDBusConnection>
-#include <chrono>
+#include <QTextStream>
+
+#include <n4d.hpp>
+#include <variant.hpp>
+#include <json.hpp>
+
 #include <sys/types.h>
-#include <grp.h>
-#include <pwd.h>
+
+using namespace edupals;
+using namespace std;
 
 
-LliurexUpIndicatorUtils::LliurexUpIndicatorUtils(QObject *parent)
+BellSchedulerIndicatorUtils::BellSchedulerIndicatorUtils(QObject *parent)
     : QObject(parent)
        
 {
-    PKGCACHE.setFileName("/var/cache/apt/pkgcache.bin");
+    client = new n4d::Client("https://localhost",9779);
+    variant::Variant bell_info =variant::Variant::create_array(0);
+
   
 }    
 
 
-bool LliurexUpIndicatorUtils::isClient(){
+string BellSchedulerIndicatorUtils::getFormatHour(int hour,int minute){
 
-   
-    QProcess process;
-    process.start("lliurex-version -v");
-    process.waitForFinished(-1);
-    QString stdout=process.readAllStandardOutput();
-    QString stderr=process.readAllStandardError();
-    QStringList flavours=stdout.split(QRegExp("\\W+"), QString::SkipEmptyParts);
+    std::stringstream shour;
+    shour<<hour;
+    std::stringstream sminute;
+    sminute<<minute;
+    string format_hour="";
+    string format_minute="";
   
-    if (flavours.size()>0){
-        QStringList result = flavours.filter("client");
-        if (result.size()>0){
-            return true;
-        }else{
-            return false;
-        }
+    if (hour<10){
+        format_hour='0'+shour.str();
     }else{
-        return true;
-    }    
-
-
-}
-
-
-bool LliurexUpIndicatorUtils::getUserGroups(){
-    
-
-    int j, ngroups=32;
-    gid_t groups[32];
-    struct passwd *pw;
-    struct group *gr;
-
-
-    QString user=qgetenv("USER");
-    QByteArray uname = user.toLocal8Bit();
-    const char *username = uname.data();
-    pw=getpwnam(username);
-    getgrouplist(username, pw->pw_gid, groups, &ngroups);
-    for (j = 0; j < ngroups; j++) {
-        gr = getgrgid(groups[j]);
-        if (gr != NULL)
-        if ((strcmp(gr->gr_name,"adm")==0)||(strcmp(gr->gr_name,"admins")==0)){
-            return true;
-        
-        }    
+        format_hour=shour.str();
 
     }
-    return false;
-}    
 
-
-static bool simulateUpgrade(){
-
-
-    QDBusInterface iface("org.debian.apt",  // from list on left
-                     "/org/debian/apt", // from first line of screenshot
-                     "org.debian.apt",  // from above Methods
-                     QDBusConnection::systemBus());
-
-    if (iface.isValid()){
-        QDBusMessage result=iface.call("UpgradeSystem",true);
-        QString transaction=result.arguments()[0].toString();
-        
-        QDBusInterface ifaceS("org.debian.apt",  // from list on left
-                        transaction, // from first line of screenshot
-                        "org.debian.apt.transaction",  // from above Methods
-                         QDBusConnection::systemBus());
-
-         
-         if (ifaceS.isValid()){
-             ifaceS.call("Simulate");
-          
-             QDBusInterface ifaceR("org.debian.apt",  // from list on left
-                            transaction, // from first line of screenshot
-                            "org.freedesktop.DBus.Properties",  // from above Methods
-                             QDBusConnection::systemBus());
-
-             if (ifaceR.isValid()){
-
-                QDBusMessage reply = ifaceR.call("Get", "org.debian.apt.transaction", "Dependencies");
-                 
-                //QList<QVariant> v = reply.arguments();
-                //QVariant first = v.at(0);
-                //QDBusVariant dbvFirst = first.value<QDBusVariant>();
-                //QVariant dbvFirst=reply.arguments()[0].value<QDBusVariant>().variant();
-                //QVariant vFirst = dbvFirst.variant();
-                const QDBusArgument& dbusArgs=reply.arguments()[0].value<QDBusVariant>().variant().value<QDBusArgument>();
-                //const QDBusArgument& dbusArgs = dbvFirst.value<QDBusArgument>();
-                 
-                QVariantList pkg_list;
-
-                dbusArgs.beginStructure();
-
-                int cont=0;
-                while(!dbusArgs.atEnd()) {
-                    cont=cont+1;
-                    if (cont<6){
-                        dbusArgs.beginArray();
-
-                        while(!dbusArgs.atEnd()) {
-                            QString s;
-                            dbusArgs>>s;
-                            pkg_list.push_back(s);
-                        } 
-                    }      
-
-                    dbusArgs.endArray();
-                                   
-                }       
-                
-                dbusArgs.endStructure();
-
-                if (pkg_list.size()>0){
-                    return true;
-                }else{
-                    return false;
-                } 
-            }    
-        }            
-
-    }
-    return false;    
-
-}
-
-
-bool LliurexUpIndicatorUtils::runUpdateCache(){
-
-    
-    if (!cacheUpdated){
-
-        if (!QDBusConnection::sessionBus().isConnected()) {
-            fprintf(stderr, "Cannot connect to the D-Bus session bus.\n"
-                    "To start it, run:\n"
-                    "\teval `dbus-launch --auto-syntax`\n");
-            return false;
-        }
-        
-          
-        QDBusInterface iface("org.debian.apt",  // from list on left
-                         "/org/debian/apt", // from first line of screenshot
-                         "org.debian.apt",  // from above Methods
-                         QDBusConnection::systemBus());
-
-
-        if (iface.isValid()){
-            QDBusMessage resultU=iface.call("UpdateCache");
-            QString transactionU=resultU.arguments()[0].toString();
-            
-            QDBusInterface ifaceR("org.debian.apt",  // from list on left
-                            transactionU, // from first line of screenshot
-                            "org.debian.apt.transaction", // from above Methods
-                             QDBusConnection::systemBus());
-
-
-            if (ifaceR.isValid()){
-
-                ifaceR.asyncCall("Run");
-
-                QDBusInterface ifaceS("org.debian.apt",  // from list on left
-                                transactionU, // from first line of screenshot
-                                "org.freedesktop.DBus.Properties",  // from above Methods
-                                 QDBusConnection::systemBus());
-
-                if (ifaceS.isValid()){
-                    std::this_thread::sleep_for(std::chrono::seconds(10));
-
-                    int match=0;
-                    int cont=0;
-                    int timeout=300;
-
-                    while (match==0){
-                        std::this_thread::sleep_for(std::chrono::seconds(1));
-                        QDBusMessage replyS = ifaceS.call("Get", "org.debian.apt.transaction", "ExitState");
-                        QString state = replyS.arguments()[0].value<QDBusVariant>().variant().toString();
-                        if (state != "exit-unfinished"){
-                            match=1;
-                        }else{
-                            cont=cont+1;
-                            if (cont>timeout){
-                                return false;
-                            }
-
-                        }
-
-                    }
-
-                   
-                }    
-            }
-        }  
-
-    return false;   
-    }
-    cacheUpdated=false;
-    return simulateUpgrade();
-}
-
-
-bool LliurexUpIndicatorUtils::checkRemote(){
-
-    int cont=0;
-
-    QStringList remote_pts;
-    QProcess process;
-    QString cmd="who | grep -v \"(:0\"";
-
-    process.start("/bin/sh", QStringList()<< "-c" 
-                       << cmd);
-    process.waitForFinished(-1);
-    QString stdout=process.readAllStandardOutput();
-    QString stderr=process.readAllStandardError();
-    QStringList remote_users=stdout.split("\n");
-    remote_users.takeLast();
-
-    if (remote_users.size()>0){
-        QRegularExpression re("pts/\\d+");
-        QRegularExpressionMatch match = re.match(remote_users[0]);
-        if (match.hasMatch()) {
-            QString matched = match.captured(0);
-            remote_pts.push_back(matched);
-        }  
-    }      
-
-    QProcess process2;
-    QString cmd2="ps -ef | grep 'lliurex-upgrade' | grep -v 'grep'";
-    process2.start("/bin/sh", QStringList()<< "-c" 
-                       << cmd2);
-    process2.waitForFinished(-1);
-    QString stdout2=process2.readAllStandardOutput();
-    QString stderr2=process2.readAllStandardError();
-    QStringList remote_process=stdout2.split("\n");
-    remote_process.takeLast();
-
-    for(int i=0 ; i < remote_process.length() ; i++){
-       if (remote_process[i].contains("?")){
-           cont=cont+1;
-       } // -> True
-
-       for (int j=0; j<remote_pts.length();j++){
-            if (remote_process[i].contains(remote_pts[j])){
-                cont=cont+1;
-            }
-       }
-    }
-
-    if (cont>0){
-        return true;
-
+    if (minute<10){
+        format_minute='0'+sminute.str();
     }else{
-        return false;
+        format_minute=sminute.str();
+
     }
 
-}  
-
-
-bool LliurexUpIndicatorUtils::isCacheUpdated(){
-
-
-    QDateTime currentTime=QDateTime::currentDateTime();
-    QDateTime lastModification=QFileInfo(PKGCACHE).lastModified();    
-
-    qint64 millisecondsDiff = lastModification.msecsTo(currentTime);
-
-    if (millisecondsDiff<APT_FRECUENCY){
-        cacheUpdated=true;
-    }
-    return cacheUpdated;
+   string format_time=format_hour+":"+format_minute;
+   return format_time;
 
 }
+
+
+
+variant::Variant BellSchedulerIndicatorUtils::readToken(){
+
+
+    variant::Variant tmp =variant::Variant::create_array(0);
+
+    variant::Variant bell_info = client->call("BellSchedulerManager","read_conf");
+
+    cout << bell_info << endl ;
+
+    cout<<bell_info["status"]<<endl;
+    cout << "----------" << endl;
+    QFile file("/home/lliurex/Escritorio/bellscheduler-token");
+    file.open(QIODevice::ReadOnly);
+    QString s;
+    QTextStream s1(&file);
+ 
+    QString line;
+    QStringList bells_id;
+    while (s1.readLineInto(&line)) {
+        bells_id.push_back(line);
+    } 
+    file.close();
+    qDebug()<<"Lista de bells_id" << bells_id;
+    
+    for(int i=0 ; i < bells_id.length() ; i++){
+        
+        variant::Variant info=variant::Variant::create_struct();  
+        //info["hour"]=bell_info["data"][bellId]["hour"].get_string();
+        string bellId=bells_id[i].toStdString();
+        cout << bellId << endl;
+        int hour=bell_info["data"][bellId]["hour"].get_int32();
+        int minute=bell_info["data"][bellId]["minute"].get_int32();
+        string format_hour=getFormatHour(hour,minute);
+        
+        int duration=bell_info["data"][bellId]["play"]["duration"];
+
+        clog<<duration<<endl;
+        info["bellId"]=bellId;
+        info["name"]=bell_info["data"][bellId]["name"].get_string();
+        info["hour"]=format_hour;
+        info["duration"]=duration;
+        info["bellPID"]="";
+        tmp.append(info);
+        
+    }
+        
+ 
+    clog<<tmp<<endl;
+
+    qDebug()<<"fin";
+    return tmp;
+
+
+}
+
 

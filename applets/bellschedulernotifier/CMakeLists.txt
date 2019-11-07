@@ -1,23 +1,23 @@
 
 #######################################################################################
 # Package
-plasma_install_package(package org.kde.plasma.lliurexupnotifier)
+plasma_install_package(package org.kde.plasma.bellschedulernotifier)
 
 
 #######################################################################################
 # Notes Library
-add_definitions(-DTRANSLATION_DOMAIN="plasma_applet_org.kde.plasma.lliurexupnotifier")
+add_definitions(-DTRANSLATION_DOMAIN="plasma_applet_org.kde.plasma.bellschedulernotifier")
 
-set(upnotifier_SRCS
+set(bellnotifier_SRCS
     plugin/plugin.cpp
-    plugin/LliurexUpIndicator.cpp
-    plugin/LliurexUpIndicatorUtils.cpp
+    plugin/BellSchedulerIndicator.cpp
+    plugin/BellSchedulerIndicatorUtils.cpp
    
 )
 
-add_library(lliurexupnotifierplugin SHARED ${upnotifier_SRCS})
+add_library(bellschedulernotifierplugin SHARED ${bellnotifier_SRCS})
 
-target_link_libraries(lliurexupnotifierplugin
+target_link_libraries(bellschedulernotifierplugin
                       Qt5::Quick
                       Qt5::Core
                       Qt5::Widgets
@@ -25,14 +25,16 @@ target_link_libraries(lliurexupnotifierplugin
                       KF5::I18n
                       KF5::Notifications
                       KF5::KIOWidgets
+                      Edupals::Base Edupals::N4D
+
                       )
 
-install(FILES plugin/qmldir DESTINATION ${QML_INSTALL_DIR}/org/kde/plasma/private/lliurexupnotifier)
-install(TARGETS lliurexupnotifierplugin DESTINATION ${QML_INSTALL_DIR}/org/kde/plasma/private/lliurexupnotifier)
+install(FILES plugin/qmldir DESTINATION ${QML_INSTALL_DIR}/org/kde/plasma/private/bellschedulernotifier)
+install(TARGETS bellschedulernotifierplugin DESTINATION ${QML_INSTALL_DIR}/org/kde/plasma/private/bellschedulernotifier)
 
-install(FILES "icons/lliurexupnotifier.svg"
+install(FILES "icons/bellschedulernotifier.svg"
         DESTINATION ${DATAROOTDIR}/usr/share/plasma/desktoptheme/default/icons/)
-install(FILES "knotifications5/llxupnotifier.notifyrc"
+install(FILES "knotifications5/bellschedulernotifier.notifyrc"
         DESTINATION ${DATAROOTDIR}/usr/share/knotifications5/)        
 #install(FILES "autostart/lliurex-up-indicator"
 #        DESTINATION ${DATAROOTDIR}/etc/bin)        
