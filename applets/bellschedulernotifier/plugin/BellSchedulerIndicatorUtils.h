@@ -19,6 +19,7 @@
 #define PLASMA_BELL_SCHEDULER_INDICATOR_UTILS_H
 
 #include <QObject>
+#include <QProcess>
 
 #include <n4d.hpp>
 #include <variant.hpp>
@@ -38,6 +39,7 @@ public:
     BellSchedulerIndicatorUtils(QObject *parent = nullptr);
 
     variant::Variant readToken();
+    bool areBellsLive();
 
 private:    
         

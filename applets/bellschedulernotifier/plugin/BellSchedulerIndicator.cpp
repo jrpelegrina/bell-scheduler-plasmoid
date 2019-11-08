@@ -27,6 +27,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QThread>
+#include <QtCore/QStringList>
 
 #include <variant.hpp>
 
@@ -38,13 +39,16 @@ using namespace std;
 BellSchedulerIndicator::BellSchedulerIndicator(QObject *parent)
     : QObject(parent)
     , m_timer(new QTimer(this))
-    ,m_utils(new BellSchedulerIndicatorUtils(this))
+    , m_timer_run(new QTimer(this))
+    , m_utils(new BellSchedulerIndicatorUtils(this))
     
 {
     
 
     TARGET_FILE.setFileName("/home/lliurex/Escritorio/bellscheduler-token");
-   
+   	
+   	cout << "#######BELL INFO######" << endl;
+    cout << bellsInfo << endl;
 
     connect(m_timer, &QTimer::timeout, this, &BellSchedulerIndicator::worker);
     m_timer->start(5000);
@@ -58,6 +62,7 @@ void BellSchedulerIndicator::worker(){
     if (!is_working){
         if (BellSchedulerIndicator::TARGET_FILE.exists() ) {
             getBellInfo();
+            isAlive();
             
         }
     }        
@@ -68,9 +73,121 @@ void BellSchedulerIndicator::worker(){
 void BellSchedulerIndicator::getBellInfo(){
 
     is_working=true;
-    variant::Variant bellsList = m_utils->readToken();
+    variant::Variant tmp = m_utils->readToken();
     cout << "#############" << endl;
-    cout << bellsList << endl;
+    cout << tmp << endl;
+    QStringList bellsId;
+
+   
+   	qDebug()<<"vacia";
+    if (bellsInfo.size()>0){
+    	int bellsInfoLength=sizeof(bellsInfo)/sizeof(bellsInfo[0]);
+    	if (bellsInfoLength>0){
+	    	for (int i=0;i<bellsInfoLength+1;i++){
+	    		bellsId.push_back(QString::fromStdString(bellsInfo[i]["bellId"]));
+
+	    	}
+		} 
+	}	   
+    int tmpLength=sizeof(tmp)/sizeof(tmp[ 0 ]);
+
+    for (int i=0;i<tmpLength+1;i++){
+    	QString id=QString::fromStdString(tmp[i]["bellId"]);
+    	if (!bellsId.contains(id)){
+    		bellsInfo.append(tmp[i]);
+
+			QString title=i18n("Playing the scheduled bell:");
+			QString hour=QString::fromStdString(tmp[i]["hour"]);
+			QString bell=QString::fromStdString(tmp[i]["name"]);
+			QString duration_label=i18n("Duration: ");
+			QString duration="";
+			if (tmp[i]["duration"].get_int32()==0){
+				duration=i18n("Full reproduction");
+			}else{
+				QString label=i18n(" seconds");
+				QString s = QString::number(tmp[i]["duration"].get_int32());
+				duration=s+label;
+			}
+
+			QString subtooltip=title+"\n-"+hour+" "+bell+"\n-"+duration_label+duration;
+			m_bellPlayingNotification = KNotification::event(QStringLiteral("Run"), subtooltip, {}, "bell-scheduler-indicator", nullptr, KNotification::CloseOnTimeout , QStringLiteral("bellschedulernotifier"));
+	        QString name = i18n("Stop now");
+	        m_bellPlayingNotification->setDefaultAction(name);
+	        m_bellPlayingNotification->setActions({name});
+	        connect(m_bellPlayingNotification, QOverload<unsigned int>::of(&KNotification::activated), this, &BellSchedulerIndicator::stopBell);
+		
+		}   
+	}	
+
+	cout << bellsInfo << endl;
+
+}
+
+void BellSchedulerIndicator::isAlive(){
+
+	qDebug()<<"Esta vivo";
+	bellToken=false;
+	changeTryIconState(0);
+	connect(m_timer_run, &QTimer::timeout, this, &BellSchedulerIndicator::checkStatus);
+    m_timer_run->start(1000);
+    checkStatus();
+
+
+}
+
+void BellSchedulerIndicator::checkStatus(){
+
+	qDebug()<<"Checheando";
+	if (BellSchedulerIndicator::TARGET_FILE.exists() ) { 
+		if (!bellToken){
+			bellToken=true;
+		}
+	}else{
+		if (m_utils->areBellsLive()){
+			bellToken=true;
+		}else{
+			bellToken=false;
+			m_timer_run->stop();
+			changeTryIconState(1);
+		}	
+
+	}	
+	
+	
+}
+
+
+BellSchedulerIndicator::TrayStatus BellSchedulerIndicator::status() const
+{
+    return m_status;
+}
+
+
+
+void BellSchedulerIndicator::changeTryIconState(int state){
+
+	qDebug()<<"Cambio icono";
+    const QString tooltip(i18n("Bell-Scheduler"));
+    if (state==0){
+    	qDebug()<<"Activando icono";
+        setStatus(ActiveStatus);
+        const QString subtooltip(i18n("Alarm is playing"));
+        setToolTip(tooltip);
+        setSubToolTip(subtooltip);
+        setIconName("bellschedulernotifier");
+        /*
+        m_bellPlayingNotification = KNotification::event(QStringLiteral("Run"), subtooltip, {}, "bell-scheduler-indicator", nullptr, KNotification::CloseOnTimeout , QStringLiteral("bellschedulernotifier"));
+        const QString name = i18n("Stop now");
+        m_bellPlayingNotification->setDefaultAction(name);
+        m_bellPlayingNotification->setActions({name});
+        connect(m_bellPlayingNotification, QOverload<unsigned int>::of(&KNotification::activated), this, &BellSchedulerIndicator::stopBell);
+		*/
+
+    }else{
+        setStatus(PassiveStatus);
+    }
+    
+
 
 }
 
@@ -81,16 +198,15 @@ void BellSchedulerIndicator::stopBell(){
 
 
 
-BellSchedulerIndicator::TrayStatus BellSchedulerIndicator::status() const
-{
-    return m_status;
-}
-
-
 
 void BellSchedulerIndicator::setStatus(BellSchedulerIndicator::TrayStatus status)
 {
+    
+	qDebug()<<"m_status"<<m_status;
+	qDebug()<<"status"<<status;
+
     if (m_status != status) {
+    	qDebug()<<"Cambiando icono";
         m_status = status;
         emit statusChanged();
     }

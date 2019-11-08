@@ -24,6 +24,8 @@
 #include <QStandardPaths>
 #include <QDebug>
 #include <QTextStream>
+#include <QJsonObject>
+#include <QList>
 
 #include <n4d.hpp>
 #include <variant.hpp>
@@ -88,6 +90,8 @@ variant::Variant BellSchedulerIndicatorUtils::readToken(){
     cout<<bell_info["status"]<<endl;
     cout << "----------" << endl;
     QFile file("/home/lliurex/Escritorio/bellscheduler-token");
+    //QFile file("/tmp/.BellScheduler/bellscheduler-token");
+
     file.open(QIODevice::ReadOnly);
     QString s;
     QTextStream s1(&file);
@@ -132,3 +136,89 @@ variant::Variant BellSchedulerIndicatorUtils::readToken(){
 }
 
 
+
+QStringList getBellPid(){
+
+    QStringList bellPid;
+
+    QList<QJsonObject>pidInfo;
+    QProcess process;
+    QString cmd="ps -ef | grep 'ffplay -nodisp -autoexit' | grep -v 'grep'";
+    
+    process.start("/bin/sh", QStringList()<< "-c" 
+                       << cmd);
+    process.waitForFinished(-1);
+    QString stdout=process.readAllStandardOutput();
+    QString stderr=process.readAllStandardError();
+    qDebug()<<stdout;
+    QStringList lst=stdout.split("\n");
+    qDebug()<<"############SPLIT###########3"<<lst;
+
+    if (lst.length()>0){
+        for (int i=0;i<lst.length();i++){
+            QStringList tmp_list;
+            QJsonObject tmp_pid{
+                {"bellId",""},
+                {"PidParent",""},
+                {"BellPID",""}
+
+            };
+            int cont=0;
+            QStringList processed_line=lst[i].split(" ");
+            qDebug()<< "##############PROCESADO LINEA###########"<<processed_line;
+            if (processed_line.length()>=10){
+                for (int i=0;i<processed_line.length();i++){
+                    if (processed_line[i].compare("")!=0){
+                        tmp_list.push_back(processed_line[i]);
+
+                    }
+                }    
+                qDebug()<<"#########   TMP LIST"<<tmp_list;
+                processed_line=tmp_list;
+                if (processed_line[7].compare("/bin/bash")==0){
+                    if (processed_line[9].compare("check_holiday")==0){
+                        tmp_pid["bellId"]=processed_line[13];
+                    }else{
+                        tmp_pid["bellId"]=processed_line[11];
+
+                    }
+                    tmp_pid["PidParent"]=processed_line[1];
+                    if (pidInfo.length()>0){
+                        for (int i=0;i<pidInfo.length();i++){
+                            if (pidInfo[i]["bellId"]==tmp_pid["bellId"]){
+                                cont=cont+1;
+
+                            }
+
+                        }
+                    }
+                    if (cont==0){
+                        pidInfo.append(tmp_pid);
+
+                    }    
+
+                }    
+                qDebug()<<"############## PID_INFO"<<pidInfo;
+                qDebug()<<"############## TMP PID"<<tmp_pid;
+                
+
+              
+
+            }
+
+
+        }
+    }    
+
+    return bellPid;
+
+}
+
+bool BellSchedulerIndicatorUtils::areBellsLive(){
+
+    bool bellsLive=false;
+    QStringList pid=getBellPid();
+
+    return bellsLive;
+
+}

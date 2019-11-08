@@ -51,8 +51,8 @@ public:
      * System tray icon states.
      */
     enum TrayStatus {
-        PassiveStatus=0,
-        NeedsAttentionStatus
+        ActiveStatus=0,
+        PassiveStatus
     };
 
     BellSchedulerIndicator(QObject *parent = nullptr);
@@ -77,6 +77,7 @@ public slots:
     
     void worker();
     void getBellInfo();
+    void checkStatus();
     void stopBell();
 
 signals:
@@ -90,19 +91,16 @@ private:
 
     QTimer *m_timer = nullptr;
     QTimer *m_timer_run=nullptr;
-    QTimer *m_timer_cache=nullptr;
     TrayStatus m_status = PassiveStatus;
     QString m_iconName = QStringLiteral("bellschedulernotifier");
     QString m_toolTip;
     QString m_subToolTip;
     QFile TARGET_FILE;
-    int FREQUENCY=3600;
-    bool updatedInfo=false;
-    bool remoteUpdateInfo=false;
     bool is_working=false;
-    int last_check=1205;
-    int last_update=0;
+    bool bellToken=false;
     BellSchedulerIndicatorUtils* m_utils;
+    QPointer<KNotification> m_bellPlayingNotification;
+    variant::Variant bellsInfo =variant::Variant::create_array(0);
      
 };
 
