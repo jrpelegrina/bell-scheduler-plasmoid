@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the lliurexupnotifier package.
+# This file is distributed under the same license as the bellschedulernotifier package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: lliurexupnotifier \n"
+"Project-Id-Version: bellschedulernotifier \n"
 "Report-Msgid-Bugs-To: http://lliurex.net\n"
-"POT-Creation-Date: 2019-10-18 09:54+0200\n"
+"POT-Creation-Date: 2019-11-13 17:06+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,28 +17,49 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../applets/lliurexupnotifier/package/contents/ui/main.qml:45 ../debian/plasma-widget-lliurex-up-notifier/usr/share/plasma/plasmoids/org.kde.plasma.lliurexupnotifier/contents/ui/main.qml:45
-#: ../debian/tmp/usr/share/plasma/plasmoids/org.kde.plasma.lliurexupnotifier/contents/ui/main.qml:45
+#: ../applets/bellschedulernotifier/package/contents/ui/main.qml:43
+#: ../debian/plasma-widget-bell-scheduler-notifier/usr/share/plasma/plasmoids/org.kde.plasma.bellschedulernotifier/contents/ui/main.qml:43
+#: ../debian/tmp/usr/share/plasma/plasmoids/org.kde.plasma.bellschedulernotifier/contents/ui/main.qml:43
 #, kde-format
-msgid "Update the system"
+msgid "Stop the bell now"
 msgstr ""
 
-#: ../applets/lliurexupnotifier/plugin/LliurexUpIndicator.cpp:97
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:85
 #, kde-format
-msgid "Lliurex-Up"
+msgid "Duration: "
 msgstr ""
 
-#: ../applets/lliurexupnotifier/plugin/LliurexUpIndicator.cpp:101
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:91
 #, kde-format
-msgid "There are new packages ready to be updated or installed"
+msgid "Full reproduction"
 msgstr ""
 
-#: ../applets/lliurexupnotifier/plugin/LliurexUpIndicator.cpp:109
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:94
 #, kde-format
-msgid "Update now"
+msgid " seconds"
 msgstr ""
 
-#: ../applets/lliurexupnotifier/plugin/LliurexUpIndicator.cpp:116
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:102
 #, kde-format
-msgid "Lliurex-Up is being executed"
+msgid "Playing the bell:"
+msgstr ""
+
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:105
+#, kde-format
+msgid "Stop now"
+msgstr ""
+
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:111
+#, kde-format
+msgid "The bell has ended:"
+msgstr ""
+
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:231
+#, kde-format
+msgid "Bell-Scheduler"
+msgstr ""
+
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:235
+#, kde-format
+msgid "Playing the scheduled bell"
 msgstr ""

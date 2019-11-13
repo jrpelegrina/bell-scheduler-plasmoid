@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: http://lliurex.net\n"
-"POT-Creation-Date: 2019-10-18 09:54+0200\n"
-"PO-Revision-Date: 2019-10-18 09:57+0200\n"
+"POT-Creation-Date: 2019-11-13 17:06+0100\n"
+"PO-Revision-Date: 2019-11-13 17:09+0100\n"
 "Last-Translator: lliurex <lliurex@lliurex.net>\n"
 "Language-Team: Catalan <kde-i18n-ca@kde.org>\n"
 "Language: es\n"
@@ -17,29 +17,49 @@ msgstr ""
 "X-Generator: Poedit 2.0.6\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../applets/lliurexupnotifier/package/contents/ui/main.qml:45
-#: ../debian/plasma-widget-lliurex-up-notifier/usr/share/plasma/plasmoids/org.kde.plasma.lliurexupnotifier/contents/ui/main.qml:45
-#: ../debian/tmp/usr/share/plasma/plasmoids/org.kde.plasma.lliurexupnotifier/contents/ui/main.qml:45
+#: ../applets/bellschedulernotifier/package/contents/ui/main.qml:43
+#: ../debian/plasma-widget-bell-scheduler-notifier/usr/share/plasma/plasmoids/org.kde.plasma.bellschedulernotifier/contents/ui/main.qml:43
+#: ../debian/tmp/usr/share/plasma/plasmoids/org.kde.plasma.bellschedulernotifier/contents/ui/main.qml:43
 #, kde-format
-msgid "Update the system"
-msgstr "Actualizar el sistema"
+msgid "Stop the bell now"
+msgstr "Detener la alarma ahora"
 
-#: ../applets/lliurexupnotifier/plugin/LliurexUpIndicator.cpp:97
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:85
 #, kde-format
-msgid "Lliurex-Up"
-msgstr "Lliurex-Up"
+msgid "Duration: "
+msgstr "Duración: "
 
-#: ../applets/lliurexupnotifier/plugin/LliurexUpIndicator.cpp:101
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:91
 #, kde-format
-msgid "There are new packages ready to be updated or installed"
-msgstr "Hay nuevo paquetes listos para ser actualizados y/o instalados"
+msgid "Full reproduction"
+msgstr "Reproducción completa"
 
-#: ../applets/lliurexupnotifier/plugin/LliurexUpIndicator.cpp:109
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:94
 #, kde-format
-msgid "Update now"
-msgstr "Actualizar ahora"
+msgid " seconds"
+msgstr " segundos"
 
-#: ../applets/lliurexupnotifier/plugin/LliurexUpIndicator.cpp:116
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:102
 #, kde-format
-msgid "Lliurex-Up is being executed"
-msgstr "Lliurex-Up está siendo ejecutado"
+msgid "Playing the bell:"
+msgstr "Reproduciendo la alarma:"
+
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:105
+#, kde-format
+msgid "Stop now"
+msgstr "Detener ahora"
+
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:111
+#, kde-format
+msgid "The bell has ended:"
+msgstr "La alarma ha finalizado:"
+
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:231
+#, kde-format
+msgid "Bell-Scheduler"
+msgstr ""
+
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:235
+#, kde-format
+msgid "Playing the scheduled bell"
+msgstr "Reproduciendo la alarma programada"

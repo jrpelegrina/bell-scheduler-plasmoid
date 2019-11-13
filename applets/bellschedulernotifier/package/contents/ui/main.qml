@@ -40,7 +40,7 @@ Item {
 
     Component.onCompleted: {
        plasmoid.removeAction("configure");
-       plasmoid.setAction("bellstop", i18n("Stop the bell now"), "update-low"); 
+       plasmoid.setAction("bellstop", i18n("Stop the bell now"), "media-playback-stop"); 
                   
     }
 

@@ -99,7 +99,7 @@ void BellSchedulerIndicator::showNotification(QString notType,int index){
 	qDebug()<<"################ 7";
 
 	if (notType=="start"){
-		QString title=i18n("Playing the scheduled bell:");
+		QString title=i18n("Playing the bell:");
 		QString subtooltip=title+"\n-"+hour+" "+bell+"\n-"+duration_label+duration;
 		m_bellPlayingNotification = KNotification::event(QStringLiteral("Run"), subtooltip, {}, "bell-scheduler-indicator", nullptr, KNotification::CloseOnTimeout , QStringLiteral("bellschedulernotifier"));
 	    QString name = i18n("Stop now");
@@ -108,7 +108,7 @@ void BellSchedulerIndicator::showNotification(QString notType,int index){
 	    connect(m_bellPlayingNotification, QOverload<unsigned int>::of(&KNotification::activated), this, &BellSchedulerIndicator::stopBell);
 	}else{
 		qDebug()<<"################ 8";
-		QString title=i18n("The scheduled bell has ended");
+		QString title=i18n("The bell has ended:");
 		QString subtooltip=title+"\n-"+hour+" "+bell+"\n-"+duration_label+duration;
 		m_bellPlayingNotification = KNotification::event(QStringLiteral("Run"), subtooltip, {}, "bell-scheduler-indicator", nullptr, KNotification::CloseOnTimeout , QStringLiteral("bellschedulernotifier"));
 		qDebug()<<"################ 9";
@@ -232,7 +232,7 @@ void BellSchedulerIndicator::changeTryIconState(int state){
     if (state==0){
     	qDebug()<<"Activando icono";
         setStatus(ActiveStatus);
-        const QString subtooltip(i18n("Alarm is playing"));
+        const QString subtooltip(i18n("Playing the scheduled bell"));
         setToolTip(tooltip);
         setSubToolTip(subtooltip);
         setIconName("bellschedulernotifier");
