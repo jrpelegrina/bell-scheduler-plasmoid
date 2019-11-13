@@ -10,9 +10,9 @@ import org.kde.plasma.private.bellschedulernotifier 1.0
 // Item - the most basic plasmoid component, an empty container.
 Item {
 
-	id:bellschedulerApplet
-	
-	BellSchedulerIndicator{
+    id:bellschedulerApplet
+    
+    BellSchedulerIndicator{
         id:bellSchedulerIndicator
 
     }
@@ -21,13 +21,13 @@ Item {
     Plasmoid.status: {
         /* Warn! Enum types are accesed through ClassName not ObjectName */
         switch (bellSchedulerIndicator.status){
-            case BellSchedulerIndicator.NeedsAttentionStatus: 
-                return PlasmaCore.Types.NeedsAttentionStatus
+            case BellSchedulerIndicator.ActiveStatus:
+                return PlasmaCore.Types.ActiveStatus
             case BellSchedulerIndicator.PassiveStatus:
                 return PlasmaCore.Types.PassiveStatus
            
         }
-        return  PlasmaCore.Types.PassiveStatus
+        return  PlasmaCore.Types.ActiveStatus
         
     }
 
@@ -40,29 +40,32 @@ Item {
 
     Component.onCompleted: {
        plasmoid.removeAction("configure");
-       plasmoid.setAction("stop", i18n("Stop the alarm"), "stop"); 
+       plasmoid.setAction("bellstop", i18n("Stop the bell now"), "update-low"); 
                   
     }
 
    
-	Plasmoid.onActivated: action_stop()
-	Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
+    Plasmoid.onActivated: action_bellstop()
+    Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
     Plasmoid.compactRepresentation: PlasmaCore.IconItem {
         source: plasmoid.icon
-        
+        MouseArea {
+            anchors.fill: parent
+            onClicked: action_bellstop()
+        }
     }
 
     Plasmoid.onExpandedChanged: if (Plasmoid.expanded) {
-        action_stop()
+        action_bellstop()
     }
 
     
-    function action_stop() {
-    	
-        bellSchedulerIndicator.stop_alarm()
+    function action_bellstop() {
+        
+        bellSchedulerIndicator.stopBell()
         /*plasmoid.activated()*/
 
     }
 
     
- }	
+ }  
