@@ -19,6 +19,8 @@
 #define PLASMA_BELL_SCHEDULER_INDICATOR_UTILS_H
 
 #include <QObject>
+#include <QProcess>
+#include <QFile>
 
 #include <n4d.hpp>
 #include <variant.hpp>
@@ -35,16 +37,27 @@ class BellSchedulerIndicatorUtils : public QObject
 public:
    
 
-    BellSchedulerIndicatorUtils(QObject *parent = nullptr);
+   BellSchedulerIndicatorUtils(QObject *parent = nullptr);
 
-    variant::Variant readToken();
+   void getBellInfo();
+   void linkBellPid();
+   void stopBell();
+   QStringList areBellsLive();
+   bool isTokenUpdated();
+
+   QStringList bellsId;
+   variant::Variant bellsInfo =variant::Variant::create_array(0);
+   //bool areBellsLive();
+   bool tokenUpdated=false;
 
 private:    
-        
-     string  getFormatHour(int hour,int minute);
-     n4d::Client *client;
-
-
+     
+	variant::Variant readToken();
+    std::tuple<QList<QJsonObject>, QStringList> getBellPid();	
+    string  getFormatHour(int hour,int minute);
+    n4d::Client *client;
+    QFile BELLS_TOKEN;
+    qint64 MOD_FRECUENCY=5000;
     
      
 };
