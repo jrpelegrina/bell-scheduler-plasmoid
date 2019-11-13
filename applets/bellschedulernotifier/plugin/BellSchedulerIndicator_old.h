@@ -91,12 +91,10 @@ private:
 
     bool areBellsLive();
     void linkBellPid();
-    void showNotification(QString notType, int index);
 
     QTimer *m_timer = nullptr;
     QTimer *m_timer_run=nullptr;
     TrayStatus m_status = PassiveStatus;
-    QStringList bellsnotification;
     QString m_iconName = QStringLiteral("bellschedulernotifier");
     QString m_toolTip;
     QString m_subToolTip;
@@ -106,7 +104,7 @@ private:
     BellSchedulerIndicatorUtils* m_utils;
     QPointer<KNotification> m_bellPlayingNotification;
     QPointer<KNotification> m_bellStopNotification;
-    //variant::Variant bellsInfo =variant::Variant::create_array(0);
+    variant::Variant bellsInfo =variant::Variant::create_array(0);
      
 };
 

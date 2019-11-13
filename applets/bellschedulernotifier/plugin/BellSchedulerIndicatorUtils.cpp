@@ -31,6 +31,7 @@
 #include <variant.hpp>
 #include <json.hpp>
 
+#include <tuple>
 #include <sys/types.h>
 
 using namespace edupals;
@@ -42,8 +43,8 @@ BellSchedulerIndicatorUtils::BellSchedulerIndicatorUtils(QObject *parent)
        
 {
     client = new n4d::Client("https://localhost",9779);
-    variant::Variant bell_info =variant::Variant::create_array(0);
-
+    //variant::Variant bell_info =variant::Variant::create_array(0);
+     BELLS_TOKEN.setFileName("tmp/.BellScheduler/bellscheduler-token");
   
 }    
 
@@ -89,7 +90,7 @@ variant::Variant BellSchedulerIndicatorUtils::readToken(){
 
     cout<<bell_info["status"]<<endl;
     cout << "----------" << endl;
-    QFile file("/home/lliurex/Escritorio/bellscheduler-token");
+    QFile file("/tmp/.BellScheduler/bellscheduler-token");
     //QFile file("/tmp/.BellScheduler/bellscheduler-token");
 
     file.open(QIODevice::ReadOnly);
@@ -102,7 +103,7 @@ variant::Variant BellSchedulerIndicatorUtils::readToken(){
         bells_id.push_back(line);
     } 
     file.close();
-    qDebug()<<"Lista de bells_id" << bells_id;
+   // qDebug()<<"Lista de bells_id" << bells_id;
     
     for(int i=0 ; i < bells_id.length() ; i++){
         
@@ -135,13 +136,43 @@ variant::Variant BellSchedulerIndicatorUtils::readToken(){
 
 }
 
+void BellSchedulerIndicatorUtils::getBellInfo(){
+
+    variant::Variant token_content = readToken();
+    cout << "#############" << endl;
+    cout << token_content << endl;
+
+ //   qDebug()<<"vacia";
+    if (bellsInfo.count()>0){
+        for (int i=0;i<bellsInfo.count();i++){
+   //         qDebug()<<"3";
+            if (!bellsId.contains(QString::fromStdString(bellsInfo[i]["bellId"]))){
+                bellsId.push_back(QString::fromStdString(bellsInfo[i]["bellId"]));
+            }    
+        }
+    } 
+    
+   for (int i=0;i<token_content.count();i++){
+     //   qDebug()<<"5";
+        QString id=QString::fromStdString(token_content[i]["bellId"]);
+        if (!bellsId.contains(id)){
+           // qDebug()<<"6";
+            bellsInfo.append(token_content[i]);
+            
+        }   
+    }   
+    qDebug()<<"9";
+    qDebug()<<"LISTA DE ALARMAS SONANDO";
+    cout << bellsInfo << endl;
+
+}
 
 
-QStringList getBellPid(){
+std::tuple<QList<QJsonObject>, QStringList> BellSchedulerIndicatorUtils::getBellPid(){
 
     QStringList bellPid;
-
     QList<QJsonObject>pidInfo;
+
     QProcess process;
     QString cmd="ps -ef | grep 'ffplay -nodisp -autoexit' | grep -v 'grep'";
     
@@ -150,22 +181,22 @@ QStringList getBellPid(){
     process.waitForFinished(-1);
     QString stdout=process.readAllStandardOutput();
     QString stderr=process.readAllStandardError();
-    qDebug()<<stdout;
+  //  qDebug()<<stdout;
     QStringList lst=stdout.split("\n");
-    qDebug()<<"############SPLIT###########3"<<lst;
+ //   qDebug()<<"############SPLIT###########3"<<lst;
 
     if (lst.length()>0){
         for (int i=0;i<lst.length();i++){
             QStringList tmp_list;
             QJsonObject tmp_pid{
                 {"bellId",""},
-                {"PidParent",""},
-                {"BellPID",""}
+                {"pidParent",""},
+                {"bellPID",""}
 
             };
             int cont=0;
             QStringList processed_line=lst[i].split(" ");
-            qDebug()<< "##############PROCESADO LINEA###########"<<processed_line;
+   //         qDebug()<< "##############PROCESADO LINEA###########"<<processed_line;
             if (processed_line.length()>=10){
                 for (int i=0;i<processed_line.length();i++){
                     if (processed_line[i].compare("")!=0){
@@ -173,7 +204,7 @@ QStringList getBellPid(){
 
                     }
                 }    
-                qDebug()<<"#########   TMP LIST"<<tmp_list;
+     //           qDebug()<<"#########   TMP LIST"<<tmp_list;
                 processed_line=tmp_list;
                 if (processed_line[7].compare("/bin/bash")==0){
                     if (processed_line[9].compare("check_holiday")==0){
@@ -182,7 +213,7 @@ QStringList getBellPid(){
                         tmp_pid["bellId"]=processed_line[11];
 
                     }
-                    tmp_pid["PidParent"]=processed_line[1];
+                    tmp_pid["pidParent"]=processed_line[1];
                     if (pidInfo.length()>0){
                         for (int i=0;i<pidInfo.length();i++){
                             if (pidInfo[i]["bellId"]==tmp_pid["bellId"]){
@@ -197,28 +228,134 @@ QStringList getBellPid(){
 
                     }    
 
-                }    
-                qDebug()<<"############## PID_INFO"<<pidInfo;
-                qDebug()<<"############## TMP PID"<<tmp_pid;
+                }else{
+      //              qDebug()<<"LINEA !=/bin/bash";
+                    for (int i=0; i<pidInfo.length();i++){
+        //                qDebug()<< processed_line[2];
+        //                qDebug()<< pidInfo[i]["pidParent"].toString();
+                        if (processed_line[2].compare(pidInfo[i]["pidParent"].toString())==0){
+                            pidInfo[i]["bellPID"]=processed_line[1];
+                        }
+
+                        bellPid.append(processed_line[1]);    
+                    }
+
                 
 
-              
 
-            }
+                }    
+    //            qDebug()<<"############## PID_INFO"<<pidInfo;
+    //            qDebug()<<"############## TMP PID"<<tmp_pid;
+    //            qDebug()<<"############## BELL PID"<<bellPid;
+                
+          }
 
 
         }
     }    
-
-    return bellPid;
+   
+  //  qDebug()<<"########## INFO##########3";
+    return {pidInfo,bellPid};
 
 }
 
-bool BellSchedulerIndicatorUtils::areBellsLive(){
+QStringList BellSchedulerIndicatorUtils::areBellsLive(){
 
-    bool bellsLive=false;
-    QStringList pid=getBellPid();
+    auto[pidInfo,bellPid]=getBellPid();
 
-    return bellsLive;
+    QStringList removeBells;
 
+ //  qDebug()<<"VIENDO SI HAY ALARMAS VIVAS";
+  //  qDebug()<<"NUMERO DE PIDS"<<bellPid.size();
+
+    if (bellPid.size()>0){
+    //    qDebug()<<"NUMERO DE ALARMAS VIVAS"<<bellsInfo.count();
+        for (int i=bellsInfo.count()-1;i>=0;i--){
+      //      qDebug()<<"VIENDO SI HAY ALARMAS MUERTAS";
+            QString bellPID=QString::fromStdString(bellsInfo[i]["bellPID"]);
+        //    qDebug()<<"ARE LIVE??"<<bellPID;
+            if (bellPID!=""){
+                if (!bellPid.contains(bellPID)){
+          //          qDebug()<<"BELL TERMINADA"<<bellPID;
+                    removeBells.push_back(QString::fromStdString(bellsInfo[i]["bellId"]));
+                 } 
+
+            }
+
+        }
+    }    
+
+    qDebug()<<"BORRADO DE ALARMAS"<<removeBells;    
+    return removeBells;    
+
+}
+
+void BellSchedulerIndicatorUtils::linkBellPid(){
+
+   // qDebug()<<"ASOCIANDO PID";
+    int cont=0;
+    auto[pidInfo,bellPid]=getBellPid();
+
+  
+    for (int i=0;i<bellsInfo.count();i++){
+        QString bellPID=QString::fromStdString(bellsInfo[i]["bellPID"]);
+        if (bellPID==""){
+     //       qDebug()<<"contando";
+            cont=cont+1;
+        }
+    }
+   // qDebug()<<"CONTADOR DE PID";
+    //qDebug()<<cont;
+    if (cont>0){
+      //  qDebug()<<"ASOCIANDO PID START";
+        int pidInfoLength=sizeof(pidInfo)/sizeof(pidInfo[0]);
+        //qDebug()<<"NUMERO PID INFO"<<pidInfoLength;
+        //qDebug()<<"SIZE PID INFO"<<pidInfo.size();
+        for (int i=0; i<pidInfo.size();i++){
+            
+                for (int j=0;j<bellsInfo.count();j++){
+                    QString bellID=QString::fromStdString(bellsInfo[j]["bellId"]);
+          //          qDebug()<<"#######3BellID"<<bellID;
+                    QString bellID2=pidInfo[i]["bellId"].toString();
+            //        qDebug()<<"#########3BellID2"<<bellID2;
+                    if (bellID.compare(bellID2)==0){
+              //          qDebug()<<"matc";
+                        QString bellPID=pidInfo[i]["bellPID"].toString();
+                        bellsInfo[j]["bellPID"]=bellPID.toStdString();
+                    }
+
+                }
+            
+        }
+
+    }
+    qDebug()<<"RESULTADO LINK";
+    cout << bellsInfo << endl ; 
+
+}
+
+bool BellSchedulerIndicatorUtils::isTokenUpdated(){
+
+
+    qDebug()<<"CHECKEANDO TOKEN";
+    tokenUpdated=false;
+
+    QDateTime currentTime=QDateTime::currentDateTime();
+    QDateTime lastModification=QFileInfo(BELLS_TOKEN).lastModified();    
+
+    qint64 millisecondsDiff = lastModification.msecsTo(currentTime);
+
+
+    if (millisecondsDiff<MOD_FRECUENCY){
+        tokenUpdated=true;
+    }
+    qDebug()<<"TOKEN UPDATE:"<<tokenUpdated;
+    return tokenUpdated;
+
+}
+
+void BellSchedulerIndicatorUtils::stopBell(){
+
+    client->call("BellSchedulerManager","stop_bell");
+    
 }
