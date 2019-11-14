@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: http://lliurex.net\n"
-"POT-Creation-Date: 2019-11-13 17:06+0100\n"
-"PO-Revision-Date: 2019-11-13 17:07+0100\n"
+"POT-Creation-Date: 2019-11-14 10:50+0100\n"
+"PO-Revision-Date: 2019-11-14 10:51+0100\n"
 "Last-Translator: lliurex <lliurex@lliurex.net>\n"
 "Language-Team: Catalan <kde-i18n-ca@kde.org>\n"
 "Language: es\n"
@@ -18,48 +18,51 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../applets/bellschedulernotifier/package/contents/ui/main.qml:43
-#: ../debian/plasma-widget-bell-scheduler-notifier/usr/share/plasma/plasmoids/org.kde.plasma.bellschedulernotifier/contents/ui/main.qml:43
-#: ../debian/tmp/usr/share/plasma/plasmoids/org.kde.plasma.bellschedulernotifier/contents/ui/main.qml:43
 #, kde-format
 msgid "Stop the bell now"
 msgstr "Para l'alarma ara"
 
-#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:85
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:74
 #, kde-format
 msgid "Duration: "
 msgstr "Durada: "
 
-#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:91
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:80
+#, kde-format
+msgid "Error. Not Available"
+msgstr "Error. No disponible"
+
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:88
 #, kde-format
 msgid "Full reproduction"
 msgstr "Reproducció completa"
 
-#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:94
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:90
 #, kde-format
 msgid " seconds"
 msgstr " segons"
 
-#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:102
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:98
 #, kde-format
 msgid "Playing the bell:"
 msgstr "S'està reproduint l'alarma:"
 
-#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:105
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:101
 #, kde-format
 msgid "Stop now"
 msgstr "Para ara"
 
-#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:111
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:106
 #, kde-format
 msgid "The bell has ended:"
 msgstr "L'alarma ha finalitzat:"
 
-#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:231
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:221
 #, kde-format
 msgid "Bell-Scheduler"
 msgstr ""
 
-#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:235
+#: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:225
 #, kde-format
 msgid "Playing the scheduled bell"
 msgstr "S'està reproduint l'alarma programada"

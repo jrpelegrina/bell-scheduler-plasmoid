@@ -103,10 +103,9 @@ private:
     QFile TARGET_FILE;
     bool is_working=false;
     bool bellToken=false;
+    int checkToken=0;
     BellSchedulerIndicatorUtils* m_utils;
     QPointer<KNotification> m_bellPlayingNotification;
-    QPointer<KNotification> m_bellStopNotification;
-    //variant::Variant bellsInfo =variant::Variant::create_array(0);
      
 };
 

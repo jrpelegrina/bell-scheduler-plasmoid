@@ -45,13 +45,13 @@ Item {
     }
 
    
-    Plasmoid.onActivated: action_bellstop()
+    //Plasmoid.onActivated: action_bellstop()
     Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
     Plasmoid.compactRepresentation: PlasmaCore.IconItem {
         source: plasmoid.icon
         MouseArea {
             anchors.fill: parent
-            onClicked: action_bellstop()
+            //onClicked: action_bellstop()
         }
     }
 
