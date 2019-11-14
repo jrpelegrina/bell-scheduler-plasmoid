@@ -42,7 +42,7 @@ public:
    void getBellInfo();
    void linkBellPid();
    void stopBell();
-   QStringList areBellsLive();
+   std::tuple<bool, QStringList> areBellsLive();
    bool isTokenUpdated();
 
    QStringList bellsId;
@@ -52,12 +52,12 @@ public:
 
 private:    
      
-	variant::Variant readToken();
+	  variant::Variant readToken();
     std::tuple<QList<QJsonObject>, QStringList> getBellPid();	
     string  getFormatHour(int hour,int minute);
     n4d::Client *client;
     QFile BELLS_TOKEN;
-    qint64 MOD_FRECUENCY=5000;
+    qint64 MOD_FRECUENCY=2000;
     
      
 };

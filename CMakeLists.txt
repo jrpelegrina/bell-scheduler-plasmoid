@@ -26,6 +26,7 @@ find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS Plasma I18n Notification
 
 find_package(EdupalsBase REQUIRED)
 find_package(EdupalsN4D REQUIRED)
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fexceptions")
 
 find_package(X11)
 set_package_properties(X11 PROPERTIES DESCRIPTION "X11 libraries"
