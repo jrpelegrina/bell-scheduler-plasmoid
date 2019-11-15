@@ -218,7 +218,7 @@ BellSchedulerIndicator::TrayStatus BellSchedulerIndicator::status() const
 
 void BellSchedulerIndicator::changeTryIconState(int state){
 
-    const QString tooltip(i18n("Bell-Scheduler"));
+    const QString tooltip(i18n("Bell Scheduler"));
 
     if (state==0){
         setStatus(ActiveStatus);

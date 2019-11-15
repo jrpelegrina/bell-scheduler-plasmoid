@@ -59,7 +59,7 @@ msgstr "The bell has ended:"
 
 #: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:221
 #, kde-format
-msgid "Bell-Scheduler"
+msgid "Bell Scheduler"
 msgstr ""
 
 #: ../applets/bellschedulernotifier/plugin/BellSchedulerIndicator.cpp:225

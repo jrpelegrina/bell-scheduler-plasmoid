@@ -1,8 +1,8 @@
 [Global]
 IconName=bell-scheduler
-Comment=Bell-Scheduler
-Comment[ca@valencia]=Bell-Scheduler
-Comment[es]=Bell-Scheduler
+Comment=Bell Scheduler
+Comment[ca@valencia]=Bell Scheduler
+Comment[es]=Bell Scheduler
 
 
 [Event/Run]

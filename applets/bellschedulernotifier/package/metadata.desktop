@@ -1,12 +1,12 @@
 [Desktop Entry]
-Name=Bell-Scheduler Notifier
-Name[ca]=Bell-Scheduler Notifier
-Name[ca@valencia]=Bell-Scheduler Notifier
-Name[en_GB]=Bell-Scheduler Notifier
-Name[es]=Bell-Scheduler Notifier
+Name=Bell Scheduler Notifier
+Name[ca]=Bell Scheduler Notifier
+Name[ca@valencia]=Bell Scheduler Notifier
+Name[en_GB]=Bell Scheduler Notifier
+Name[es]=Bell Scheduler Notifier
 Comment=Display warnings when an alarm is played
 Comment[ca]=Mostra avisos quan es reprodueix una alarma
-Comment[ca@valencia]=MMostra avisos quan es reprodueix una alarma
+Comment[ca@valencia]=Mostra avisos quan es reprodueix una alarma
 Comment[en_GB]=Display warnings when an alarm is played
 Comment[es]=Muestra avisos cuando se reproduce una alarma
 Icon=bell-scheduler-indicator
